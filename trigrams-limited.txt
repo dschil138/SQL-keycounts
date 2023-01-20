@@ -1,0 +1,65 @@
+WITH raw_trigram_data AS
+    (
+      SELECT
+        key_code,
+        lag(key_code) OVER (ORDER BY time_utc) AS key_code_lag_1,
+        lag(key_code, 2) OVER (ORDER BY time_utc) AS key_code_lag_2
+      FROM key_log
+    )
+    , trigram_counts AS
+    (
+      SELECT
+        key_code_lag_2 || ' ' || key_code_lag_1 || ' ' || key_code AS trigram,
+        count(*) AS count
+      FROM raw_trigram_data
+      WHERE true
+        AND key_code IS NOT NULL
+        AND key_code_lag_1 IS NOT NULL
+        AND key_code_lag_2 IS NOT NULL
+        AND key_code NOT LIKE '%+%'
+        AND key_code_lag_1 NOT LIKE '%+%'
+        AND key_code_lag_2 NOT LIKE '%+%'
+        AND key_code NOT LIKE '%<enter>%'
+        AND key_code_lag_1 NOT LIKE '%<enter>%'
+        AND key_code_lag_2 NOT LIKE '%<enter>%'
+        AND key_code NOT LIKE '%<space>%'
+        AND key_code_lag_1 NOT LIKE '%<space>%'
+        AND key_code_lag_2 NOT LIKE '%<space>%'
+        AND key_code NOT LIKE '%<backspace>%'
+        AND key_code_lag_1 NOT LIKE '%<backspace>%'
+        AND key_code_lag_2 NOT LIKE '%<backspace>%'
+        AND key_code NOT LIKE '%<media_volume_up>%'
+        AND key_code_lag_1 NOT LIKE '%<media_volume_up>%'
+        AND key_code_lag_2 NOT LIKE '%<media_volume_up>%'
+        AND key_code NOT LIKE '%<media_volume_down>%'
+        AND key_code_lag_1 NOT LIKE '%<media_volume_down>%'
+        AND key_code_lag_2 NOT LIKE '%<media_volume_down>%'
+        AND key_code NOT LIKE '%<left>%'
+        AND key_code_lag_1 NOT LIKE '%<left>%'
+        AND key_code_lag_2 NOT LIKE '%<left>%'
+        AND key_code NOT LIKE '%<right>%'
+        AND key_code_lag_1 NOT LIKE '%<right>%'
+        AND key_code_lag_2 NOT LIKE '%<right>%'
+        AND key_code NOT LIKE '%<up>%'
+        AND key_code_lag_1 NOT LIKE '%<up>%'
+        AND key_code_lag_2 NOT LIKE '%<up>%'
+        AND key_code NOT LIKE '%<down>%'
+        AND key_code_lag_1 NOT LIKE '%<down>%'
+        AND key_code_lag_2 NOT LIKE '%<down>%'
+        AND key_code NOT LIKE '%<tab>%'
+        AND key_code_lag_1 NOT LIKE '%<tab>%'
+        AND key_code_lag_2 NOT LIKE '%<tab>%'
+      GROUP BY 1
+    )
+    , trigram_frequencies AS
+    (
+      SELECT *,
+        (1.0* count ) / (SELECT sum(count) FROM trigram_counts) AS frequency
+      FROM trigram_counts
+    )
+    SELECT *, SUM(frequency) OVER (
+        ORDER BY frequency DESC ROWS UNBOUNDED PRECEDING
+    ) AS cumulative_frequency
+    FROM trigram_frequencies
+    GROUP BY trigram
+    ORDER BY cumulative_frequency, count DESC, trigram

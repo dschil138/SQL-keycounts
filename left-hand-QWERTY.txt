@@ -1,0 +1,27 @@
+WITH frequencies AS (
+        SELECT
+          LOWER(key_code) AS key_code,
+          SUM(CASE WHEN key_code IN ('q', 'Q') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('w', 'W') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('e', 'E') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('r', 'R') THEN 1 ELSE 0 END) +         
+          SUM(CASE WHEN key_code IN ('t', 'T') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('a', 'A') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('s', 'S') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('d', 'D') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('f', 'F') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('g', 'G') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('x', 'X') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('c', 'C') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('b', 'D') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('v', 'V') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('z', 'Z') THEN 1 ELSE 0 END) AS count      
+        FROM key_log
+        GROUP BY 1
+    )
+    SELECT 'Total' AS key_code, SUM(count) AS count
+    FROM frequencies
+    UNION ALL
+    SELECT *
+    FROM frequencies
+    ORDER BY count DESC, key_code

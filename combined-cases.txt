@@ -1,0 +1,39 @@
+WITH frequencies AS (
+        SELECT
+          LOWER(key_code) AS key_code,
+          SUM(CASE WHEN key_code IN ('a', 'A') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('b', 'B') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('c', 'C') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('d', 'D') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('e', 'E') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('f', 'F') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('g', 'G') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('h', 'H') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('i', 'I') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('j', 'J') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('k', 'K') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('l', 'L') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('m', 'M') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('n', 'N') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('o', 'O') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('p', 'P') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('q', 'Q') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('r', 'R') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('s', 'S') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('t', 'T') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('u', 'U') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('v', 'V') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('w', 'W') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('x', 'X') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('y', 'Y') THEN 1 ELSE 0 END) +
+          SUM(CASE WHEN key_code IN ('z', 'Z') THEN 1 ELSE 0 END) +
+          count(*) AS count,
+          (count(*) * 1.0) / (SELECT count(*) FROM key_log) AS frequency
+        FROM key_log
+        GROUP BY 1
+    )
+    SELECT *, SUM(frequency) OVER (
+        ORDER BY frequency DESC ROWS UNBOUNDED PRECEDING
+    ) AS cumulative_frequency
+    FROM frequencies
+    ORDER BY frequency DESC, key_code

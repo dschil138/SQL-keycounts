@@ -1,0 +1,24 @@
+WITH raw_bigram_data AS
+    (
+      SELECT key_code, lag(key_code) OVER (ORDER BY time_utc) AS key_code_lag_1
+      FROM key_log
+    )
+    , bigram_counts AS
+    (
+      SELECT key_code_lag_1 || ' ' || key_code AS bigram, count(*) AS count
+      FROM raw_bigram_data
+      WHERE key_code REGEXP '^[A-Za-z0-9]+$' AND key_code_lag_1 REGEXP '^[A-Za-z0-9]+$'
+      GROUP BY 1
+    )
+    , bigram_frequencies AS
+    (
+      SELECT *,
+        (1.0* count ) / (SELECT sum(count) FROM bigram_counts) AS frequency
+      FROM bigram_counts
+    )
+    SELECT *, SUM(frequency) OVER (
+        ORDER BY frequency DESC ROWS UNBOUNDED PRECEDING
+    ) AS cumulative_frequency
+    FROM bigram_frequencies
+    GROUP BY bigram
+    ORDER BY cumulative_frequency, count DESC, bigram
