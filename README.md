@@ -8,13 +8,14 @@ The keylogger program will create an SQLite database for you, which has a few qu
 - Separated counts for the Right hand and the Left hand (versions for both Colemak and QWERTY)
 - "Limited" bigrams, trigrams, quadgrams, etc. "Limited" here means the counts exclude non-alphanumeric keys such as Shift, Esc, VOL_UP, VOL_DOWN, etc
 
+---
 
-## Using These Queries
+# Using These Queries
 The keylogger program will create an SQLite database for you. In an effort to let you continue to use that same database file which holds your keycounts, and to keep in the same open philosophy of Benign Key Logger, I've written these queries as a series of plain text files, which you can simply paste into a new "View" in SQLiteStudio. 
 
 *IE: The user is able to see exactly what is happening. There is no possible trickery here with your keylog file. You get to enter the SQL queries yourself into the program, as opposed to opening an opaque file.*
 
-**To use:**
+### To use:
 1. Open your "key_log.sqlite" file in SQLiteStudio
 2. With the icons at the top, click "Create a View" (usually the 6th icon from the left)
 3. Name the view
